@@ -23,18 +23,31 @@ export default class Knight extends Piece {
                 // Row makes big move
                 let newRow = square.row + b
                 let newCol = square.col + s
-                if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) {
+                let newSquare = Square.at(newRow, newCol)
+                if (!board.checkBounds(newSquare))
                     continue
+
+                if (board.getPiece(newSquare) === undefined) {
+                    moves.push(newSquare)
+                } else {
+                    if (board.canCapture(newSquare, this.player)) {
+                        moves.push(newSquare)
+                        break
+                    }
                 }
-                moves.push(Square.at(newRow, newCol))
 
                 // Col makes big move
                 newRow = square.row + s
                 newCol = square.col + b
-                if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) {
-                    continue
+                newSquare = Square.at(newRow, newCol)
+                if (board.getPiece(newSquare) === undefined) {
+                    moves.push(newSquare)
+                } else {
+                    if (board.canCapture(newSquare, this.player)) {
+                        moves.push(newSquare)
+                        break
+                    }
                 }
-                moves.push(Square.at(newRow, newCol))
             }
         }
 
