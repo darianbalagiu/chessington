@@ -14,17 +14,28 @@ export default class King extends Piece {
 
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
+
                 if (i == 0 && j == 0) {
                     continue
                 }
+
                 let newRow = square.row + i
                 let newCol = square.col + j
+                let newSquare = Square.at(newRow, newCol)
 
-                if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) {
+                if (!board.checkBounds(newSquare)) {
                     continue
                 }
 
-                moves.push(Square.at(newRow, newCol))
+                if (board.getPiece(newSquare) === undefined)
+                    moves.push(newSquare)
+                else {
+                    if (board.canCapture(newSquare, this.player)) {
+                        moves.push(newSquare)
+                    }
+                    break
+                }
+
             }
         }
 
