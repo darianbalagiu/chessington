@@ -22,6 +22,8 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
+                if (board.canCapture(newSquare, this.player))
+                    moves.push(newSquare)
                 break
             }
             moves.push(newSquare)
@@ -39,6 +41,8 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
+                if (board.canCapture(newSquare, this.player))
+                    moves.push(newSquare)
                 break
             }
             moves.push(newSquare)
@@ -56,6 +60,8 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
+                if (board.canCapture(newSquare, this.player))
+                    moves.push(newSquare)
                 break
             }
             moves.push(newSquare)
@@ -73,6 +79,8 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
+                if (board.canCapture(newSquare, this.player))
+                    moves.push(newSquare)
                 break
             }
             moves.push(newSquare)
