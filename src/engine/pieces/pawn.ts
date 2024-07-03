@@ -10,34 +10,39 @@ export default class Pawn extends Piece {
 
     public getAvailableMoves(board: Board): Square[] {
         let moves: Square[] = [];
-        for (let row = 0; row <= 7; row++) {
-            for (let col = 0; col <= 7; col++) {
-                let square = Square.at(row, col)
-                let piece = board.getPiece(square)
 
-                // Ignore empty sqaures
-                if (piece === undefined)
-                    continue
+        let square = board.findPiece(this)
+        let row = square.row
+        let col = square.col
 
-                // Only care about our pieces
-                if (piece.player === this.player) {
+        if (this.player === Player.WHITE) {
+            let newSquare= Square.at(row + 1, col)
+            if (board.checkBounds(newSquare)) {
 
-                    // PAWNS
-                    if (piece instanceof Pawn) {
-                        if (this.player === Player.WHITE) {
-                            moves.push(Square.at(row + 1, col))
-                            if (row === 1) {
-                                moves.push(Square.at(3, col))
-                            }
-                        } else {
-                            moves.push(Square.at(row - 1, col))
-                            if (row === 6) {
-                                moves.push(Square.at(4, col))
-                            }
+                if (board.getPiece(newSquare) === undefined) {
+                    moves.push(newSquare)
+                    if (row === 1) {
+                        let newSquare = Square.at(row + 2, col)
+                        if (board.getPiece(newSquare) === undefined) {
+                            moves.push(newSquare)
                         }
                     }
                 }
+            }
+        } else {
+            let newSquare = Square.at(row - 1, col)
+            if (board.checkBounds(newSquare)) {
 
+                if (board.getPiece(newSquare) === undefined) {
+                    moves.push(newSquare)
+
+                    if (row === 6) {
+                        let newSquare = Square.at(row - 2, col)
+                        if (board.getPiece(newSquare) === undefined) {
+                            moves.push(newSquare)
+                        }
+                    }
+                }
             }
         }
         return moves

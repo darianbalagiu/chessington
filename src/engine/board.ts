@@ -47,4 +47,11 @@ export default class Board {
         }
         return board;
     }
+
+    public checkBounds(square: Square): Boolean {
+        if (square.row < 0 || square.col > 7 || square.col < 0 || square.col > 7) {
+            return false
+        }
+        return true
+    }
 }
