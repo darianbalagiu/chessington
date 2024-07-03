@@ -12,8 +12,6 @@ export default class Knight extends Piece {
         let moves: Square[] = [];
         let square = board.findPiece(this)
 
-        let row = square.row + 1
-        let col = square.col + 1
 
         let bigMoves = [-2, 2]
         let smallMoves = [-1, 1]
