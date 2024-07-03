@@ -59,7 +59,7 @@ export default class Board {
     public canCapture(square: Square, player: Player): Boolean {
         let otherPiece = this.getPiece(square)
         if (otherPiece === undefined)
-            return true
+            return false
         if (otherPiece.player != player && !(otherPiece instanceof King))
             return true
         return false
