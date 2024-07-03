@@ -14,14 +14,26 @@ export default class Pawn extends Piece {
             for (let col = 0; col <= 7; col++) {
                 let square = Square.at(row, col)
                 let piece = board.getPiece(square)
+
+                // Ignore empty sqaures
                 if (piece === undefined)
                     continue
+
+                // Only care about our pieces
                 if (piece.player === this.player) {
+
+                    // PAWNS
                     if (piece instanceof Pawn) {
                         if (this.player === Player.WHITE) {
                             moves.push(Square.at(row + 1, col))
+                            if (row === 1) {
+                                moves.push(Square.at(3, col))
+                            }
                         } else {
                             moves.push(Square.at(row - 1, col))
+                            if (row === 6) {
+                                moves.push(Square.at(4, col))
+                            }
                         }
                     }
                 }
