@@ -12,12 +12,16 @@ export default class Rook extends Piece {
         let moves: Square[] = [];
         let square = board.findPiece(this)
 
-        // Horizontal
+        // Horizontal Right
         let delta = 1
         while (delta < 7) {
             let newSquare = Square.at(square.row, square.col + delta)
+
+            // Stop if out of bounds
             if (!board.checkBounds(newSquare))
                 break
+
+            // Stop if we meet an existing piece
             if (board.getPiece(newSquare) !== undefined)
                 break
 
@@ -25,6 +29,7 @@ export default class Rook extends Piece {
             delta++
         }
 
+        // Horizontal Left
         delta = 1
         while (delta < 7) {
             let newSquare = Square.at(square.row, square.col - delta)
@@ -37,7 +42,7 @@ export default class Rook extends Piece {
             delta++
         }
 
-        // Vertical
+        // Vertical Down
         delta = 1
         while (delta < 7) {
             let newSquare = Square.at(square.row + delta, square.col)
@@ -50,6 +55,7 @@ export default class Rook extends Piece {
             delta++
         }
 
+        // Vertical Down
         delta = 1
         while (delta < 7) {
             let newSquare = Square.at(square.row - delta, square.col)

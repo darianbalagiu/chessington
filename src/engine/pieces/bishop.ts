@@ -12,38 +12,70 @@ export default class Bishop extends Piece {
         let moves: Square[] = [];
         let square = board.findPiece(this)
 
+
+        // bottom right
         let row = square.row + 1
         let col = square.col + 1
 
         while (row <= 7 && col <= 7) {
-            moves.push(Square.at(row, col))
+            let newSquare = Square.at(row, col)
+
+            // Met with another piece
+            if (board.getPiece(newSquare) !== undefined) {
+                break
+            }
+            moves.push(newSquare)
             row++
             col++
         }
 
+
+        // top left
         row = square.row - 1
         col = square.col - 1
 
         while (row >= 0 && col >= 0) {
-            moves.push(Square.at(row, col))
+            let newSquare = Square.at(row, col)
+
+            // Met with another piece
+            if (board.getPiece(newSquare) !== undefined) {
+                break
+            }
+            moves.push(newSquare)
             row--
             col--
         }
 
+
+        // top right
         row = square.row - 1
         col = square.col + 1
 
         while (row >= 0 && col <= 7) {
-            moves.push(Square.at(row, col))
+            let newSquare = Square.at(row, col)
+
+            // Met with another piece
+            if (board.getPiece(newSquare) !== undefined) {
+                break
+            }
+            moves.push(newSquare)
             row--
             col++
         }
 
+
+        // bottom left
         row = square.row + 1
         col = square.col - 1
 
         while (row <= 7 && col >= 0) {
-            moves.push(Square.at(row, col))
+            let newSquare = Square.at(row, col)
+
+            // Met with another piece
+            if (board.getPiece(newSquare) !== undefined) {
+                break
+            }
+            moves.push(newSquare)
             row++
             col--
         }
