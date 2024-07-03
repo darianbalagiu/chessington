@@ -2,6 +2,7 @@ import Player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
 import Piece from './pieces/piece';
+import King from "./pieces/king";
 
 export default class Board {
     public currentPlayer: Player;
@@ -53,5 +54,14 @@ export default class Board {
             return false
         }
         return true
+    }
+
+    public canCapture(square: Square, player: Player): Boolean {
+        let otherPiece = this.getPiece(square)
+        if (otherPiece === undefined)
+            return true
+        if (otherPiece.player != player && !(otherPiece instanceof King))
+            return true
+        return false
     }
 }
