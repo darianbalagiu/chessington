@@ -57,11 +57,10 @@ export default class Board {
         const movingPiece = this.getPiece(fromSquare);
         let potentiallyCapturedPiece = this.getPiece(toSquare);
         if (potentiallyCapturedPiece !== undefined && potentiallyCapturedPiece?.pieceType === PieceType.KING) {
-            console.log("CANT KILL A KING");
             return;
         }
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
-            console.log(this.printBoard())
+            this.printBoard();
             let simulateBoard : Board | undefined = this.deepCopy();
             if (!simulateBoard.simulateMove(fromSquare, toSquare, movingPiece)) {
                 return;
@@ -152,18 +151,15 @@ export default class Board {
 
     public getAllPossibleMoves(player: number) {
         let attackedSquares: Square[] = [];
-        console.log("???");
 
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 let square = Square.at(row, col);
                 let piece = this.getPiece(square);
                 if (piece === undefined) {
-                    console.log("undf")
                     continue;
                 }
                 if (piece.player !== player) {
-                    console.log("celalalt")
                     continue;
                 }
                 console.log(piece.pieceType);
@@ -185,10 +181,7 @@ export default class Board {
                 } else if (piece.isKing()) {
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
-                } else {
-                    console.log("Unknown piece type");
                 }
-
             }
         }
         return attackedSquares;
