@@ -1,8 +1,7 @@
-import Piece from './piece';
+import Piece, {PieceType} from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
-import player from "../player";
 
 interface Config {
     movingDir: number;
@@ -18,6 +17,11 @@ export default class Pawn extends Piece {
 
     public constructor(player: Player) {
         super(player);
+        this.pieceType = PieceType.PAWN;
+    }
+
+    public clone(): Pawn {
+        return new Pawn(this.player);
     }
 
     public getAvailableMoves(board: Board): Square[] {

@@ -1,20 +1,27 @@
 import Player from './player';
+import player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
-import Piece from './pieces/piece';
+import Piece, {PieceType} from './pieces/piece';
 import King from "./pieces/king";
 import Pawn from "./pieces/pawn";
-import player from "./player";
 import Queen from "./pieces/queen";
+import Rook from "./pieces/rook";
+import Bishop from "./pieces/bishop";
+import Knight from "./pieces/knight";
 
 export default class Board {
     public currentPlayer: Player;
-    private readonly board: (Piece | undefined)[][];
+    private board: (Piece | undefined)[][];
     public moveCount = 1;
 
     public constructor(currentPlayer?: Player) {
         this.currentPlayer = currentPlayer ? currentPlayer : Player.WHITE;
         this.board = this.createBoard();
+    }
+
+    public setBoard(board: (Piece | undefined)[][]) {
+        this.board = board;
     }
 
     public setPiece(square: Square, piece: Piece | undefined) {
@@ -36,33 +43,71 @@ export default class Board {
         throw new Error('The supplied piece is not on the board');
     }
 
+    // Deep copy method
+    public deepCopy(): Board {
+        const newBoard: (Piece | undefined)[][] = this.board.map(row =>
+            row.map(piece => piece ? piece.clone() : undefined)
+        );
+
+        const newBoardInstance = new Board(this.currentPlayer);
+        newBoardInstance.board = newBoard;
+        newBoardInstance.moveCount = this.moveCount;
+
+        return newBoardInstance;
+    }
+
     public movePiece(fromSquare: Square, toSquare: Square) {
         const movingPiece = this.getPiece(fromSquare);
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
+            console.log(this.printBoard())
+            let simulateBoard : Board | undefined = this.deepCopy();
+            if (!simulateBoard.simulateMove(fromSquare, toSquare, movingPiece)) {
+                return;
+            }
+
             this.setPiece(toSquare, movingPiece);
             this.setPiece(fromSquare, undefined);
 
             // Pawn stuff
             if (movingPiece instanceof Pawn) {
-
-                // Setup en passant flag
-                if (fromSquare.row === 1 && toSquare.row === 3 || fromSquare.row === 6 && toSquare.row === 4)
-                    movingPiece.timestamp = this.moveCount
-
-                // Check if can capture en passant
-                this.captureEnPassant(toSquare)
-
-                if (movingPiece.canPromote(toSquare)) {
-                    const queen = new Queen(movingPiece.player);
-                    this.setPiece(toSquare, queen)
-                }
+                this.movePawn(fromSquare, toSquare, movingPiece);
             }
-
-            this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
+            this.moveCount++;
+            this.currentPlayer = this.currentPlayer === Player.BLACK ? Player.WHITE : Player.BLACK;
         }
-        this.moveCount++
     }
 
+    // Returns false if our king is checked upon this move
+    public simulateMove(fromSquare: Square, toSquare: Square, movingPiece: Piece): Boolean {
+        this.setPiece(toSquare, movingPiece);
+        this.setPiece(fromSquare, undefined);
+
+        // Pawn stuff
+        if (movingPiece instanceof Pawn) {
+            this.movePawn(fromSquare, toSquare, movingPiece);
+        }
+        this.moveCount++;
+
+        return !this.kingInCheck(this.currentPlayer);
+    }
+
+
+    // Sets en passant flags and does promotion. Updates the board if necessary
+    public movePawn(fromSquare: Square, toSquare: Square, movingPiece: Pawn) {
+        // Setup en passant flag
+        if (fromSquare.row === 1 && toSquare.row === 3 || fromSquare.row === 6 && toSquare.row === 4)
+            movingPiece.timestamp = this.moveCount
+
+        // Check if can capture en passant
+        this.captureEnPassant(toSquare)
+
+        if (movingPiece.canPromote(toSquare)) {
+            const queen = new Queen(movingPiece.player);
+            this.setPiece(toSquare, queen)
+        }
+    }
+
+    // Make tha pawn captured en passant disappear (if it exists)
     public captureEnPassant(toSquare: Square): void {
         // Capture en passant
         if (this.currentPlayer === player.WHITE) {
@@ -91,10 +136,16 @@ export default class Board {
     }
 
     public checkBounds(square: Square): Boolean {
-        if (square.row < 0 || square.row > 7 || square.col < 0 || square.col > 7) {
+        return !(square.row < 0 || square.row > 7 || square.col < 0 || square.col > 7);
+
+    }
+
+    public canKillKing(square: Square, player: Player): Boolean {
+        let otherPiece = this.getPiece(square)
+        if (otherPiece === undefined)
             return false
-        }
-        return true
+        return otherPiece.player != player && !(otherPiece instanceof King);
+
     }
 
     public canCapture(square: Square, player: Player): Boolean {
@@ -103,6 +154,87 @@ export default class Board {
             return false
         return otherPiece.player != player && !(otherPiece instanceof King);
 
+    }
+
+    public getAllPossibleMoves(player: number) {
+        let attackedSquares: Square[] = [];
+        console.log("???");
+
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                let square = Square.at(row, col);
+                let piece = this.getPiece(square);
+                if (piece === undefined) {
+                    console.log("undf")
+                    continue;
+                }
+                if (piece.player !== player) {
+                    console.log("celalalt")
+                    continue;
+                }
+                console.log(piece.pieceType);
+                if (piece.isPawn()) {
+                    console.log("daaaa");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    console.log(moves);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else if (piece.isRook()) {
+                    console.log("Found a Rook");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else if (piece.isBishop()) {
+                    console.log("Found a Bishop");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else if (piece.isKnight()) {
+                    console.log("Found a Knight");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else if (piece.isQueen()) {
+                    console.log("Found a Queen");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else if (piece.isKing()) {
+                    console.log("Found a King");
+                    let moves: Square[] = piece.getAvailableMoves(this);
+                    attackedSquares = attackedSquares.concat(moves);
+                } else {
+                    console.log("Unknown piece type");
+                }
+
+            }
+        }
+        return attackedSquares;
+    }
+
+    // Returns the square of the player's king
+    public getKing(player: number): Square | undefined {
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                let square = Square.at(row, col);
+                let piece = this.getPiece(square);
+                if (piece instanceof King && piece.player === player) {
+                    return square
+                }
+            }
+        }
+        return undefined
+    }
+
+    public kingInCheck(player: number) {
+        this.printBoard();
+        const oppPlayer = player === Player.WHITE ? Player.BLACK : Player.WHITE;
+        this.currentPlayer = oppPlayer;
+        const attackedSquares = this.getAllPossibleMoves(oppPlayer);
+        console.log(attackedSquares);
+
+        this.currentPlayer = player;
+        const ownKingSquare = this.getKing(this.currentPlayer);
+        console.log(ownKingSquare);
+
+        console.log(oppPlayer);
+
+        return ownKingSquare !== undefined && attackedSquares.includes(ownKingSquare);
     }
 
     public printBoard() {

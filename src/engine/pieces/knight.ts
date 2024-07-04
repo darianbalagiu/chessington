@@ -1,4 +1,4 @@
-import Piece from './piece';
+import Piece, {PieceType} from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
@@ -6,6 +6,7 @@ import Square from "../square";
 export default class Knight extends Piece {
     public constructor(player: Player) {
         super(player);
+        this.pieceType = PieceType.KNIGHT;
     }
 
     public getAvailableMoves(board: Board): Square[] {
@@ -51,5 +52,9 @@ export default class Knight extends Piece {
         }
 
         return moves;
+    }
+
+    public clone(): Knight {
+        return new Knight(this.player);
     }
 }

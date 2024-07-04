@@ -1,4 +1,4 @@
-import Piece from './piece';
+import Piece, {PieceType} from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
@@ -7,6 +7,7 @@ import player from "../player";
 export default class Bishop extends Piece {
     public constructor(player: Player) {
         super(player);
+        this.pieceType = PieceType.BISHOP;
     }
 
     public getAvailableMoves(board: Board): Square[] {
@@ -30,8 +31,9 @@ export default class Bishop extends Piece {
 
                     // Met with another piece
                     if (board.getPiece(newSquare) !== undefined) {
-                        if (board.canCapture(newSquare, player))
+                        if (board.canCapture(newSquare, player)) {
                             moves.push(newSquare)
+                        }
                         break
                     }
                     moves.push(newSquare)
@@ -41,5 +43,8 @@ export default class Bishop extends Piece {
             }
         }
         return moves
+    }
+    public clone(): Bishop {
+        return new Bishop(this.player);
     }
 }

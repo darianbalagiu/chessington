@@ -1,4 +1,4 @@
-import Piece from './piece';
+import Piece, {PieceType} from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
@@ -6,11 +6,16 @@ import Square from "../square";
 export default class King extends Piece {
     public constructor(player: Player) {
         super(player);
+        this.pieceType = PieceType.KING;
+    }
+
+    public clone(): King {
+        return new King(this.player);
     }
 
     public getAvailableMoves(board: Board): Square[] {
         const moves: Square[] = [];
-        let square = board.findPiece(this)
+        const square = board.findPiece(this)
 
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
