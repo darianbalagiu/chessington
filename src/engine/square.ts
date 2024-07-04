@@ -18,4 +18,5 @@ export default class Square {
     public toString() {
         return `Row ${this.row}, Col ${this.col}`;
     }
+
 }

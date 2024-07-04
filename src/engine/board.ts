@@ -6,9 +6,6 @@ import Piece, {PieceType} from './pieces/piece';
 import King from "./pieces/king";
 import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
-import Rook from "./pieces/rook";
-import Bishop from "./pieces/bishop";
-import Knight from "./pieces/knight";
 
 export default class Board {
     public currentPlayer: Player;
@@ -58,6 +55,11 @@ export default class Board {
 
     public movePiece(fromSquare: Square, toSquare: Square) {
         const movingPiece = this.getPiece(fromSquare);
+        let potentiallyCapturedPiece = this.getPiece(toSquare);
+        if (potentiallyCapturedPiece !== undefined && potentiallyCapturedPiece?.pieceType === PieceType.KING) {
+            console.log("CANT KILL A KING");
+            return;
+        }
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
             console.log(this.printBoard())
             let simulateBoard : Board | undefined = this.deepCopy();
@@ -140,19 +142,11 @@ export default class Board {
 
     }
 
-    public canKillKing(square: Square, player: Player): Boolean {
-        let otherPiece = this.getPiece(square)
-        if (otherPiece === undefined)
-            return false
-        return otherPiece.player != player && !(otherPiece instanceof King);
-
-    }
-
     public canCapture(square: Square, player: Player): Boolean {
         let otherPiece = this.getPiece(square)
         if (otherPiece === undefined)
             return false
-        return otherPiece.player != player && !(otherPiece instanceof King);
+        return otherPiece.player != player;
 
     }
 
@@ -174,28 +168,21 @@ export default class Board {
                 }
                 console.log(piece.pieceType);
                 if (piece.isPawn()) {
-                    console.log("daaaa");
                     let moves: Square[] = piece.getAvailableMoves(this);
-                    console.log(moves);
                     attackedSquares = attackedSquares.concat(moves);
                 } else if (piece.isRook()) {
-                    console.log("Found a Rook");
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
                 } else if (piece.isBishop()) {
-                    console.log("Found a Bishop");
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
                 } else if (piece.isKnight()) {
-                    console.log("Found a Knight");
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
                 } else if (piece.isQueen()) {
-                    console.log("Found a Queen");
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
                 } else if (piece.isKing()) {
-                    console.log("Found a King");
                     let moves: Square[] = piece.getAvailableMoves(this);
                     attackedSquares = attackedSquares.concat(moves);
                 } else {
@@ -226,15 +213,11 @@ export default class Board {
         const oppPlayer = player === Player.WHITE ? Player.BLACK : Player.WHITE;
         this.currentPlayer = oppPlayer;
         const attackedSquares = this.getAllPossibleMoves(oppPlayer);
-        console.log(attackedSquares);
 
         this.currentPlayer = player;
         const ownKingSquare = this.getKing(this.currentPlayer);
-        console.log(ownKingSquare);
 
-        console.log(oppPlayer);
-
-        return ownKingSquare !== undefined && attackedSquares.includes(ownKingSquare);
+        return ownKingSquare !== undefined && attackedSquares.some(square => square.equals(ownKingSquare));
     }
 
     public printBoard() {
