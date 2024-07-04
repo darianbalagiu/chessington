@@ -4,6 +4,12 @@ import Board from '../board';
 import Square from "../square";
 import player from "../player";
 
+interface Config {
+    movingDir: number;
+    startingRow: number;
+    enPassantRow: number;
+}
+
 export default class Pawn extends Piece {
 
     // Use this value to know whether the pawn can be captured en passant
@@ -22,23 +28,22 @@ export default class Pawn extends Piece {
         let col = square.col
 
         // Player: [moves up/down, starting row,en passant row]
-        let configs: [number, number, number][] = [
-            [1, 1, 4],
-            [-1, 6, 3]
-        ]
+        let configs: Config[] = [
+            { movingDir: 1, startingRow: 1, enPassantRow: 4 },
+            { movingDir: -1, startingRow: 6, enPassantRow: 3 }
+        ];
 
         let config = configs[this.player]
-        const [movingDir, startingRow, enPassantRow] = config
 
 
-        let newSquare= Square.at(row + movingDir, col)
+        let newSquare= Square.at(row + config.movingDir, col)
         if (board.checkBounds(newSquare)) {
 
             if (board.getPiece(newSquare) === undefined) {
                 moves.push(newSquare)
-                if (row === startingRow) {
+                if (row === config.startingRow) {
                     // Move two steps forward
-                    let newSquare = Square.at(row + 2 * movingDir, col)
+                    let newSquare = Square.at(row + 2 * config.movingDir, col)
                     if (board.getPiece(newSquare) === undefined) {
                         moves.push(newSquare)
                     }
@@ -46,18 +51,18 @@ export default class Pawn extends Piece {
             }
             // Capture left or right
             for (let captureDir of [-1, 1]) {
-                newSquare = Square.at(row + movingDir, col + captureDir)
+                newSquare = Square.at(row + config.movingDir, col + captureDir)
                 if (board.canCapture(newSquare, this.player))
                     moves.push(newSquare)
             }
         }
 
         // Check en passant
-        if (square.row === enPassantRow) {
+        if (square.row === config.enPassantRow) {
             // En passant left and right
             for (let captureDir of [-1, 1]) {
-                let potentialEnemyPawnSquare = Square.at(enPassantRow, square.col + captureDir)
-                newSquare = Square.at(enPassantRow + movingDir, square.col + captureDir)
+                let potentialEnemyPawnSquare = Square.at(config.enPassantRow, square.col + captureDir)
+                newSquare = Square.at(config.enPassantRow + config.movingDir, square.col + captureDir)
                 let piece = board.getPiece(potentialEnemyPawnSquare)
                 if (piece !== undefined && piece instanceof Pawn && piece.timestamp === board.moveCount - 1) {
                     moves.push(newSquare)
