@@ -17,11 +17,13 @@ export default class Queen extends Piece {
         const rook = new Rook(this.player);
         board.setPiece(square, rook)
         let rookMoves: Square[] = rook.getAvailableMoves(board)
+        console.log("rook", rookMoves)
 
         // Replace queen with a bishop
         const bishop = new Bishop(this.player);
         board.setPiece(square, bishop)
         let bishopMoves: Square[] = bishop.getAvailableMoves(board)
+        console.log("bishop",bishopMoves)
 
 
         // Put the queen back to its place
@@ -30,6 +32,7 @@ export default class Queen extends Piece {
 
         // Concatenate the two behaviours
         let moves  = rookMoves.concat(bishopMoves)
+        console.log("all", moves)
 
         return moves
     }

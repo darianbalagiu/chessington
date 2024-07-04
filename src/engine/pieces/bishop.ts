@@ -2,6 +2,7 @@ import Piece from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
+import player from "../player";
 
 export default class Bishop extends Piece {
     public constructor(player: Player) {
@@ -11,7 +12,14 @@ export default class Bishop extends Piece {
     public getAvailableMoves(board: Board): Square[] {
         let moves: Square[] = [];
         let square = board.findPiece(this)
+        moves = Bishop.getMovesBishop(square, board, this.player)
 
+        return moves;
+    }
+
+    public static getMovesBishop(square: Square, board: Board, player: number) {
+
+        let moves : Square[] = []
 
         // bottom right
         let row = square.row + 1
@@ -22,7 +30,7 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
-                if (board.canCapture(newSquare, this.player))
+                if (board.canCapture(newSquare, player))
                     moves.push(newSquare)
                 break
             }
@@ -41,7 +49,7 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
-                if (board.canCapture(newSquare, this.player))
+                if (board.canCapture(newSquare, player))
                     moves.push(newSquare)
                 break
             }
@@ -60,7 +68,7 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
-                if (board.canCapture(newSquare, this.player))
+                if (board.canCapture(newSquare, player))
                     moves.push(newSquare)
                 break
             }
@@ -79,7 +87,7 @@ export default class Bishop extends Piece {
 
             // Met with another piece
             if (board.getPiece(newSquare) !== undefined) {
-                if (board.canCapture(newSquare, this.player))
+                if (board.canCapture(newSquare, player))
                     moves.push(newSquare)
                 break
             }
@@ -87,7 +95,6 @@ export default class Bishop extends Piece {
             row++
             col--
         }
-
-        return moves;
+        return moves
     }
 }

@@ -4,6 +4,8 @@ import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
 import Rook from '../../../src/engine/pieces/rook';
 import King from '../../../src/engine/pieces/king';
+import player from "../../../src/engine/player";
+import chai from "chai";
 
 describe('Pawn', () => {
 
@@ -11,6 +13,8 @@ describe('Pawn', () => {
     beforeEach(() => board = new Board());
 
     describe('white pawns', () => {
+        const chai = require('chai');
+        const should = chai.should();
 
         it('can only move one square up if they have already moved', () => {
             const pawn = new Pawn(Player.WHITE);
@@ -83,9 +87,25 @@ describe('Pawn', () => {
 
             moves.should.not.deep.include(Square.at(5, 3));
         });
+
+        it('white can capture en passant', () => {
+            const whitePawn = new Pawn(Player.WHITE);
+            const blackPawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(4, 3), whitePawn);
+            board.setPiece(Square.at(6, 2), blackPawn);
+
+            board.currentPlayer = player.BLACK
+            board.movePiece(Square.at(6,2), Square.at(4,2))
+
+            const moves = whitePawn.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(5, 2));
+        });
     });
 
     describe('black pawns', () => {
+        const chai = require('chai');
+        const should = chai.should();
 
         let board: Board;
         beforeEach(() => board = new Board(Player.BLACK));
@@ -160,6 +180,21 @@ describe('Pawn', () => {
             const moves = pawn.getAvailableMoves(board);
 
             moves.should.not.deep.include(Square.at(3, 3));
+        });
+
+        it('black can capture en passant', () => {
+
+            const whitePawn = new Pawn(Player.WHITE);
+            const blackPawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(1, 3), whitePawn);
+            board.setPiece(Square.at(3, 2), blackPawn);
+
+            board.currentPlayer = player.WHITE
+            board.movePiece(Square.at(1,3), Square.at(3, 3))
+
+            const moves = blackPawn.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(2, 3));
         });
     });
 

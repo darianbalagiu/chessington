@@ -24,15 +24,13 @@ export default class Knight extends Piece {
                 let newRow = square.row + b
                 let newCol = square.col + s
                 let newSquare = Square.at(newRow, newCol)
-                if (!board.checkBounds(newSquare))
-                    continue
-
-                if (board.getPiece(newSquare) === undefined) {
-                    moves.push(newSquare)
-                } else {
-                    if (board.canCapture(newSquare, this.player)) {
+                if (board.checkBounds(newSquare)) {
+                    if (board.getPiece(newSquare) === undefined) {
                         moves.push(newSquare)
-                        break
+                    } else {
+                        if (board.canCapture(newSquare, this.player)) {
+                            moves.push(newSquare)
+                        }
                     }
                 }
 
@@ -40,12 +38,13 @@ export default class Knight extends Piece {
                 newRow = square.row + s
                 newCol = square.col + b
                 newSquare = Square.at(newRow, newCol)
-                if (board.getPiece(newSquare) === undefined) {
-                    moves.push(newSquare)
-                } else {
-                    if (board.canCapture(newSquare, this.player)) {
+                if (board.checkBounds(newSquare)) {
+                    if (board.getPiece(newSquare) === undefined) {
                         moves.push(newSquare)
-                        break
+                    } else {
+                        if (board.canCapture(newSquare, this.player)) {
+                            moves.push(newSquare)
+                        }
                     }
                 }
             }

@@ -33,7 +33,6 @@ export default class King extends Piece {
                     if (board.canCapture(newSquare, this.player)) {
                         moves.push(newSquare)
                     }
-                    break
                 }
 
             }
