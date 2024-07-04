@@ -17,6 +17,34 @@ export default class Bishop extends Piece {
         return moves;
     }
 
+    public movesOnDirection(,verticalOffset: number, horrizontalOffset: number) {
+
+        let moves : Square[] = []
+
+        for (let i of [-1, 1]) {
+            for (let j of f [-1, 1]) {
+
+            }
+        }
+
+        let row = square.row + 1
+        let col = square.col + 1
+
+        while (row <= 7 && col <= 7) {
+            let newSquare = Square.at(row, col)
+
+            // Met with another piece
+            if (board.getPiece(newSquare) !== undefined) {
+                if (board.canCapture(newSquare, player))
+                    moves.push(newSquare)
+                break
+            }
+            moves.push(newSquare)
+            row++
+            col++
+        }
+    }
+
     public static getMovesBishop(square: Square, board: Board, player: number) {
 
         let moves : Square[] = []
