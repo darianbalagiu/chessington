@@ -21,103 +21,47 @@ export default class Pawn extends Piece {
         let row = square.row
         let col = square.col
 
-        let pairs: [number, number][] = [
-            [Player.WHITE, 1],
-            [Player.BLACK, -1]
+        // Player: [moves up/down, starting row,en passant row]
+        let configs: [number, number, number][] = [
+            [1, 1, 4],
+            [-1, 6, 3]
         ]
 
-        if (this.player === Player.WHITE) {
+        let config = configs[this.player]
+        const [movingDir, startingRow, enPassantRow] = config
 
-            // Move one step forward
-            let newSquare= Square.at(row + 1, col)
-            if (board.checkBounds(newSquare)) {
 
-                if (board.getPiece(newSquare) === undefined) {
-                    moves.push(newSquare)
-                    if (row === 1) {
-                        // Move two steps forward
-                        let newSquare = Square.at(row + 2, col)
-                        if (board.getPiece(newSquare) === undefined) {
-                            moves.push(newSquare)
-                        }
+        let newSquare= Square.at(row + movingDir, col)
+        if (board.checkBounds(newSquare)) {
+
+            if (board.getPiece(newSquare) === undefined) {
+                moves.push(newSquare)
+                if (row === startingRow) {
+                    // Move two steps forward
+                    let newSquare = Square.at(row + 2 * movingDir, col)
+                    if (board.getPiece(newSquare) === undefined) {
+                        moves.push(newSquare)
                     }
                 }
-                // Capture left
-                newSquare = Square.at(row + 1, col - 1)
-                if (board.canCapture(newSquare, this.player))
-                    moves.push(newSquare)
-
-                // Capture right
-                newSquare = Square.at(row + 1, col + 1)
+            }
+            // Capture left or right
+            for (let captureDir of [-1, 1]) {
+                newSquare = Square.at(row + movingDir, col + captureDir)
                 if (board.canCapture(newSquare, this.player))
                     moves.push(newSquare)
             }
+        }
 
-            // Check en passant
-            if (square.row === 4) {
-                // En passant right
-                let potentialEnemyPawnSquare = Square.at(4, square.col - 1)
-                newSquare = Square.at(5, square.col - 1)
+        // Check en passant
+        if (square.row === enPassantRow) {
+            // En passant left and right
+            for (let captureDir of [-1, 1]) {
+                let potentialEnemyPawnSquare = Square.at(enPassantRow, square.col + captureDir)
+                newSquare = Square.at(enPassantRow + movingDir, square.col + captureDir)
                 let piece = board.getPiece(potentialEnemyPawnSquare)
                 if (piece !== undefined && piece instanceof Pawn && piece.timestamp === board.moveCount - 1) {
                     moves.push(newSquare)
                 }
-
-                // En passant left
-                potentialEnemyPawnSquare = Square.at(4, square.col + 1)
-                newSquare = Square.at(5, square.col + 1)
-                piece = board.getPiece(newSquare)
-                if (piece !== undefined && piece instanceof Pawn && piece.timestamp === board.moveCount - 1) {
-                    moves.push(newSquare)
-                }
-            }
-        } else {
-            // PLAYER is BLACK
-
-            // Move one step forward
-            let newSquare = Square.at(row - 1, col)
-            if (board.checkBounds(newSquare)) {
-
-                if (board.getPiece(newSquare) === undefined) {
-                    moves.push(newSquare)
-
-                    if (row === 6) {
-                        // Move two steps forward
-                        let newSquare = Square.at(row - 2, col)
-                        if (board.getPiece(newSquare) === undefined) {
-                            moves.push(newSquare)
-                        }
-                    }
-                }
-                // Capture left
-                newSquare = Square.at(row - 1, col - 1)
-                if (board.canCapture(newSquare, this.player))
-                    moves.push(newSquare)
-
-                // Capture right
-                newSquare = Square.at(row - 1, col + 1)
-                if (board.canCapture(newSquare, this.player))
-                    moves.push(newSquare)
-            }
-
-            // Check en passant
-            if (square.row === 3) {
-                // En passant right
-                let potentialEnemyPawnSquare = Square.at(3, square.col - 1)
-                newSquare = Square.at(2, square.col - 1)
-                let piece = board.getPiece(potentialEnemyPawnSquare)
-                if (piece !== undefined && piece instanceof Pawn && piece.timestamp === board.moveCount - 1) {
-                    moves.push(newSquare)
-                }
-
-                // En passant left
-                potentialEnemyPawnSquare = Square.at(3, square.col + 1)
-                newSquare = Square.at(2, square.col + 1)
-                piece = board.getPiece(potentialEnemyPawnSquare)
-                if (piece !== undefined && piece instanceof Pawn && piece.timestamp === board.moveCount - 1) {
-                    moves.push(newSquare)
-                }
-
             }
         }
         return moves
