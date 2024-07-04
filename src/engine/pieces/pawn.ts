@@ -2,6 +2,7 @@ import Piece from './piece';
 import Player from '../player';
 import Board from '../board';
 import Square from "../square";
+import player from "../player";
 
 export default class Pawn extends Piece {
 
@@ -19,6 +20,11 @@ export default class Pawn extends Piece {
         let square = board.findPiece(this)
         let row = square.row
         let col = square.col
+
+        let pairs: [number, number][] = [
+            [Player.WHITE, 1],
+            [Player.BLACK, -1]
+        ]
 
         if (this.player === Player.WHITE) {
 
@@ -115,5 +121,12 @@ export default class Pawn extends Piece {
             }
         }
         return moves
+    }
+
+    public canPromote(toSqaure: Square) {
+        if (this.player === Player.WHITE && toSqaure.row === 7)
+            return true
+        return this.player === Player.BLACK && toSqaure.row === 0;
+
     }
 }

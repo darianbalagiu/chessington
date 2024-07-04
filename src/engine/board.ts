@@ -5,6 +5,7 @@ import Piece from './pieces/piece';
 import King from "./pieces/king";
 import Pawn from "./pieces/pawn";
 import player from "./player";
+import Queen from "./pieces/queen";
 
 export default class Board {
     public currentPlayer: Player;
@@ -40,13 +41,23 @@ export default class Board {
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
             this.setPiece(toSquare, movingPiece);
             this.setPiece(fromSquare, undefined);
+
+            // Pawn stuff
             if (movingPiece instanceof Pawn) {
+
                 // Setup en passant flag
                 if (fromSquare.row === 1 && toSquare.row === 3 || fromSquare.row === 6 && toSquare.row === 4)
                     movingPiece.timestamp = this.moveCount
+
                 // Check if can capture en passant
                 this.captureEnPassant(toSquare)
+
+                if (movingPiece.canPromote(toSquare)) {
+                    const queen = new Queen(movingPiece.player);
+                    this.setPiece(toSquare, queen)
+                }
             }
+
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
         }
         this.moveCount++
@@ -90,9 +101,8 @@ export default class Board {
         let otherPiece = this.getPiece(square)
         if (otherPiece === undefined)
             return false
-        if (otherPiece.player != player && !(otherPiece instanceof King))
-            return true
-        return false
+        return otherPiece.player != player && !(otherPiece instanceof King);
+
     }
 
     public printBoard() {

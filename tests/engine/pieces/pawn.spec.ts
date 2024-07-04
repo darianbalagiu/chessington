@@ -6,6 +6,7 @@ import Rook from '../../../src/engine/pieces/rook';
 import King from '../../../src/engine/pieces/king';
 import player from "../../../src/engine/player";
 import chai from "chai";
+import Queen from "../../../src/engine/pieces/queen";
 
 describe('Pawn', () => {
 
@@ -100,6 +101,22 @@ describe('Pawn', () => {
             const moves = whitePawn.getAvailableMoves(board);
 
             moves.should.deep.include(Square.at(5, 2));
+        });
+
+        it('white can promote', () => {
+            const chai = require('chai');
+            const expect = chai.expect;
+
+            const whitePawn = new Pawn(Player.WHITE);
+            board.setPiece(Square.at(6, 3), whitePawn);
+
+            board.currentPlayer = player.WHITE
+            board.movePiece(Square.at(6,3), Square.at(7,3))
+            board.currentPlayer = player.WHITE
+            let newPiece = board.getPiece(Square.at(7, 3))
+
+            // Check that the new piece is an instance of Queen
+            expect(newPiece).to.be.an.instanceof(Queen);
         });
     });
 
@@ -218,5 +235,21 @@ describe('Pawn', () => {
         const moves = pawn.getAvailableMoves(board);
 
         moves.should.not.deep.include(Square.at(4, 3));
+    });
+
+    it('black can promote', () => {
+        const chai = require('chai');
+        const expect = chai.expect;
+
+        const blackPawn = new Pawn(Player.BLACK);
+        board.setPiece(Square.at(1, 3), blackPawn);
+
+        board.currentPlayer = player.BLACK
+        board.movePiece(Square.at(1,3), Square.at(0,3))
+        board.currentPlayer = player.BLACK
+        let newPiece = board.getPiece(Square.at(0, 3))
+
+        // Check that the new piece is an instance of Queen
+        expect(newPiece).to.be.an.instanceof(Queen);
     });
 });

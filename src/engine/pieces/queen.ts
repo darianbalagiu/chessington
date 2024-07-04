@@ -14,21 +14,10 @@ export default class Queen extends Piece {
         let square = board.findPiece(this)
 
         // Replace queen with a rook
-        const rook = new Rook(this.player);
-        board.setPiece(square, rook)
-        let rookMoves: Square[] = rook.getAvailableMoves(board)
-        console.log("rook", rookMoves)
+        let rookMoves: Square[] = Rook.getMovesRook(square, board, this.player)
 
         // Replace queen with a bishop
-        const bishop = new Bishop(this.player);
-        board.setPiece(square, bishop)
-        let bishopMoves: Square[] = bishop.getAvailableMoves(board)
-        console.log("bishop",bishopMoves)
-
-
-        // Put the queen back to its place
-        const queen = new Queen(this.player);
-        board.setPiece(square, queen)
+        let bishopMoves: Square[] = Bishop.getMovesBishop(square, board, this.player)
 
         // Concatenate the two behaviours
         let moves  = rookMoves.concat(bishopMoves)
