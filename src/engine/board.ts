@@ -2,13 +2,14 @@ import Player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
 import Piece from './pieces/piece';
+import King from "./pieces/king";
 
 export default class Board {
     public currentPlayer: Player;
     private readonly board: (Piece | undefined)[][];
 
-    public constructor() {
-        this.currentPlayer = Player.WHITE;
+    public constructor(currentPlayer?: Player) {
+        this.currentPlayer = currentPlayer ? currentPlayer : Player.WHITE;
         this.board = this.createBoard();
     }
 
@@ -46,5 +47,21 @@ export default class Board {
             board[i] = new Array(GameSettings.BOARD_SIZE);
         }
         return board;
+    }
+
+    public checkBounds(square: Square): Boolean {
+        if (square.row < 0 || square.row > 7 || square.col < 0 || square.col > 7) {
+            return false
+        }
+        return true
+    }
+
+    public canCapture(square: Square, player: Player): Boolean {
+        let otherPiece = this.getPiece(square)
+        if (otherPiece === undefined)
+            return false
+        if (otherPiece.player != player && !(otherPiece instanceof King))
+            return true
+        return false
     }
 }
