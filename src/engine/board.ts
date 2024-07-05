@@ -6,6 +6,7 @@ import Piece, {PieceType} from './pieces/piece';
 import King from "./pieces/king";
 import Pawn from "./pieces/pawn";
 import Queen from "./pieces/queen";
+import Rook from "./pieces/rook";
 
 export default class Board {
     public currentPlayer: Player;
@@ -73,6 +74,29 @@ export default class Board {
             if (movingPiece instanceof Pawn) {
                 this.movePawn(fromSquare, toSquare, movingPiece);
             }
+            if (movingPiece instanceof King) {
+                // Castles. Then we need to also move the rook.
+                if (Math.abs(toSquare.col - fromSquare.col) === 2) {
+                    this.moveRookCastles(fromSquare, toSquare, movingPiece);
+                }
+                movingPiece.canCastleKingSide = false;
+                movingPiece.canCastleQueenSide = false;
+            }
+            if (movingPiece instanceof Rook) {
+                const kingSquare = this.getKing(this.currentPlayer);
+                if (kingSquare !== undefined) {
+                    let king = this.getPiece(kingSquare);
+                    if (king instanceof King) {
+                        if (fromSquare.col === 0) {
+                            king.canCastleQueenSide = false;
+                        }
+                        if (fromSquare.col === 7) {
+                            king.canCastleKingSide = false;
+                        }
+                    }
+                }
+
+            }
             this.moveCount++;
             this.currentPlayer = this.currentPlayer === Player.BLACK ? Player.WHITE : Player.BLACK;
         }
@@ -83,7 +107,7 @@ export default class Board {
         this.setPiece(toSquare, movingPiece);
         this.setPiece(fromSquare, undefined);
 
-        // Pawn stuff
+
         if (movingPiece instanceof Pawn) {
             this.movePawn(fromSquare, toSquare, movingPiece);
         }
@@ -92,8 +116,34 @@ export default class Board {
         return !this.kingInCheck(this.currentPlayer);
     }
 
+    public moveRookCastles(fromSquare: Square, toSquare: Square, king: King) {
 
-    // Sets en passant flags and does promotion. Updates the board if necessary
+        // Queen side castles
+        let kingRow = king.config.kingRow;
+        if (toSquare.col === 2) {
+            const queenSideRookSquare = Square.at(kingRow, 0);
+            const queenSideRook = this.getPiece(queenSideRookSquare);
+            if (queenSideRook === undefined) {
+                throw new Error("The queen side rook square is undefined");
+            }
+            this.setPiece(Square.at(kingRow, 3), queenSideRook);
+            this.setPiece(queenSideRookSquare, undefined);
+        }
+
+        // King side castles
+        kingRow = king.config.kingRow;
+        if (toSquare.col === 6) {
+            const kingSideRookSquare = Square.at(kingRow, 7);
+            const kingSideRook = this.getPiece(kingSideRookSquare);
+            if (kingSideRook === undefined) {
+                throw new Error("The queen side rook square is undefined");
+            }
+            this.setPiece(Square.at(kingRow, 5), kingSideRook);
+            this.setPiece(kingSideRookSquare, undefined);
+        }
+    }
+
+    // Sets en passant flags and does promotion. Updates the board if pawn captures en passant
     public movePawn(fromSquare: Square, toSquare: Square, movingPiece: Pawn) {
         // Setup en passant flag
         if (fromSquare.row === 1 && toSquare.row === 3 || fromSquare.row === 6 && toSquare.row === 4)
@@ -211,6 +261,10 @@ export default class Board {
         const ownKingSquare = this.getKing(this.currentPlayer);
 
         return ownKingSquare !== undefined && attackedSquares.some(square => square.equals(ownKingSquare));
+    }
+
+    public getOpp(player: number) {
+        return player === Player.WHITE ? Player.BLACK : Player.WHITE;
     }
 
     public printBoard() {

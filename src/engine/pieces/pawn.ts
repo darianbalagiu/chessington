@@ -32,12 +32,12 @@ export default class Pawn extends Piece {
         let col = square.col
 
         // Player: [moves up/down, starting row,en passant row]
-        let configs: Config[] = [
+        const configs: Config[] = [
             { movingDir: 1, startingRow: 1, enPassantRow: 4 },
             { movingDir: -1, startingRow: 6, enPassantRow: 3 }
         ];
 
-        let config = configs[this.player]
+        const config = configs[this.player]
 
 
         let newSquare= Square.at(row + config.movingDir, col)

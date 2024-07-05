@@ -3,10 +3,26 @@ import Player from '../player';
 import Board from '../board';
 import Square from "../square";
 
+interface Config {
+    player: number;
+    kingRow: number;
+}
+
 export default class King extends Piece {
+
+
+    public static configs: Config[] = [
+        { player : 0, kingRow : 0},
+        { player : 1, kingRow : 7}
+    ];
+    public canCastleKingSide: Boolean = true;
+    public canCastleQueenSide: Boolean = true;
+    public config: Config;
+
     public constructor(player: Player) {
         super(player);
         this.pieceType = PieceType.KING;
+        this.config = King.configs[player];
     }
 
     public clone(): King {
@@ -24,9 +40,9 @@ export default class King extends Piece {
                     continue
                 }
 
-                let newRow = square.row + i
-                let newCol = square.col + j
-                let newSquare = Square.at(newRow, newCol)
+                const newRow = square.row + i
+                const newCol = square.col + j
+                const newSquare = Square.at(newRow, newCol)
 
                 if (!board.checkBounds(newSquare)) {
                     continue
@@ -43,6 +59,79 @@ export default class King extends Piece {
             }
         }
 
+        if (this.checkCastleKingSide(board)) {
+            moves.push(Square.at(this.config.kingRow, 6));
+        }
+
+        if (this.checkCastleQueenSide(board)) {
+            moves.push(Square.at(this.config.kingRow, 2));
+        }
+
         return moves;
     }
+
+    public checkCastleKingSide(board: Board) {
+
+        if (!this.canCastleKingSide) {
+            return false;
+        }
+
+        let dangerousSquares: Square[] = [];
+        for (let col of [5,6]) {
+            const square = Square.at(this.config.kingRow, col);
+
+            // There must be no pieces in between the rook and the king
+            if (board.getPiece(square) !== undefined) {
+                return false;
+            }
+            dangerousSquares.push(square);
+        }
+
+        // Also add the king to the dangerous squares
+        dangerousSquares.push(Square.at(this.config.kingRow, 4));
+
+
+        const oppAttackingSquares = board.getAllPossibleMoves(board.getOpp(this.player));
+
+        const isAnyDangerousSquareAttacked = dangerousSquares.some(dSquare =>
+            oppAttackingSquares.some(oSquare => dSquare.equals(oSquare))
+        );
+
+        return !isAnyDangerousSquareAttacked;
+
+    }
+
+    public checkCastleQueenSide(board: Board) {
+
+        if (!this.canCastleQueenSide) {
+            return false;
+        }
+
+        let dangerousSquares: Square[] = [];
+        for (let col of [2,3]) {
+            const square = Square.at(this.config.kingRow, col);
+
+            // There must be no pieces in between the rook and the king
+            if (board.getPiece(square) !== undefined) {
+                return false;
+            }
+            dangerousSquares.push(square);
+        }
+
+        if (board.getPiece(Square.at(this.config.kingRow, 1)) !== undefined) {
+            return false;
+        }
+
+        // Also add the king to the dangerous squares
+        dangerousSquares.push(Square.at(this.config.kingRow, 4));
+
+        const oppAttackingSquares = board.getAllPossibleMoves(board.getOpp(this.player));
+
+        const isAnyDangerousSquareAttacked = dangerousSquares.some(dSquare =>
+            oppAttackingSquares.some(oSquare => dSquare.equals(oSquare))
+        );
+
+        return !isAnyDangerousSquareAttacked;
+    }
+
 }
