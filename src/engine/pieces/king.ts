@@ -76,6 +76,12 @@ export default class King extends Piece {
             return false;
         }
 
+        const kingSquare = board.findPiece(this);
+        if (kingSquare.col !== 4 || kingSquare.row !== 0 && kingSquare.row !== 7) {
+            return false;
+        }
+
+
         let dangerousSquares: Square[] = [];
         for (let col of [5,6]) {
             const square = Square.at(this.config.kingRow, col);
@@ -104,6 +110,11 @@ export default class King extends Piece {
     public checkCastleQueenSide(board: Board) {
 
         if (!this.canCastleQueenSide) {
+            return false;
+        }
+
+        const kingSquare = board.findPiece(this);
+        if (kingSquare.col !== 4 || kingSquare.row !== 0 && kingSquare.row !== 7) {
             return false;
         }
 

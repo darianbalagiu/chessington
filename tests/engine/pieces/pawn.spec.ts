@@ -7,7 +7,7 @@ import King from '../../../src/engine/pieces/king';
 import player from "../../../src/engine/player";
 import chai from "chai";
 import Queen from "../../../src/engine/pieces/queen";
-
+import { expect } from 'chai';
 describe('Pawn', () => {
 
     let board: Board;
@@ -84,9 +84,10 @@ describe('Pawn', () => {
             board.setPiece(Square.at(4, 4), pawn);
             board.setPiece(Square.at(5, 3), opposingKing);
 
-            const moves = pawn.getAvailableMoves(board);
+            const numberOfMovesBefore = board.moveCount;
+            board.movePiece(Square.at(4, 4),Square.at(5,3));
 
-            moves.should.not.deep.include(Square.at(5, 3));
+            expect(numberOfMovesBefore).to.equal(board.moveCount);
         });
 
         it('white can capture en passant', () => {
@@ -194,9 +195,10 @@ describe('Pawn', () => {
             board.setPiece(Square.at(4, 4), pawn);
             board.setPiece(Square.at(3, 3), opposingKing);
 
-            const moves = pawn.getAvailableMoves(board);
+            const numberOfMovesBefore = board.moveCount;
+            board.movePiece(Square.at(4, 4),Square.at(3,3));
 
-            moves.should.not.deep.include(Square.at(3, 3));
+            expect(numberOfMovesBefore).to.equal(board.moveCount);
         });
 
         it('black can capture en passant', () => {

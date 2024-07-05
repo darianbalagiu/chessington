@@ -4,7 +4,7 @@ import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
 import Pawn from '../../../src/engine/pieces/pawn';
 import King from '../../../src/engine/pieces/king';
-
+import { expect } from 'chai';
 describe('Queen', () => {
     let board: Board;
     beforeEach(() => board = new Board());
@@ -89,9 +89,10 @@ describe('Queen', () => {
         board.setPiece(Square.at(4, 4), queen);
         board.setPiece(Square.at(4, 6), opposingKing);
 
-        const moves = queen.getAvailableMoves(board);
+        const numberOfMovesBefore = board.moveCount;
+        board.movePiece(Square.at(4, 4),Square.at(4, 6));
 
-        moves.should.not.deep.include(Square.at(4, 6));
+        expect(numberOfMovesBefore).to.equal(board.moveCount);
     });
 
     it('cannot take friendly pieces', () => {
